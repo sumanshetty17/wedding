@@ -1,0 +1,628 @@
+import React, { useState, useEffect } from "react";
+import {
+  Star, Phone, Mail, ChevronLeft, ChevronRight,
+  Sparkles, Camera, Video, Palette, LayoutGrid, UtensilsCrossed
+} from "lucide-react";
+
+/* =====================================================================
+   SITE CONTENT — edit everything here.
+   This is the only section you (or I, on your behalf) need to touch to
+   change text, add real venues, swap photos/videos, or fill in your
+   real contact details.
+===================================================================== */
+
+// Leave these blank until you're ready — the site shows a friendly
+// placeholder until they're filled in.
+const CONTACT_INFO = {
+  phone: "",
+  email: "",
+};
+
+const ABOUT_TEXT =
+  "MarriHeaven is a dedicated wedding event organizing company committed to turning your dream wedding into reality. We work closely with couples and families to plan, coordinate, and execute weddings across indoor banquet halls, outdoor lawns, and beach destinations. From venue selection to décor, photography, and every detail in between, our team handles the planning so you can focus on celebrating. Every wedding we organize reflects both timeless tradition and thoughtful, professional execution — because your day deserves nothing less.";
+
+const INTRO_TEXT =
+  "Finding the perfect venue and experiencing your wedding exactly as you imagined it — that's what we're here for. We help you discover beautiful indoor, outdoor, and beachside venues, and take care of every detail so your celebration feels effortless from start to finish.";
+
+const QUOTE_TEXT =
+  "Marriages are made once in a lifetime — so let's plan it together and make it truly unforgettable.";
+
+const STORY_BLOCKS = [
+  {
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+    text: "Every love story deserves a setting as beautiful as the moment itself. Whether it's the warm glow of a decorated hall or the open sky of an outdoor lawn, we help you find a venue that feels like it was made for your day.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80",
+    text: "From the first walk down the aisle to the last dance of the night, we capture and craft every detail — so years from now, you can look back and relive it all over again.",
+  },
+];
+
+const TRUST_TEXT =
+  "Every venue we feature is personally reviewed by our team, and every wedding we plan is handled with the same care as if it were our own family's celebration. When you choose MarriHeaven, you're choosing a team that stays with you at every step — from your first venue visit to your final dance.";
+
+const SERVICES = [
+  { name: "Venue Decoration", icon: Sparkles, description: "Traditional and contemporary décor themes tailored to your venue and vision." },
+  { name: "Photography", icon: Camera, description: "Candid and traditional photography that captures every meaningful moment." },
+  { name: "Videography", icon: Video, description: "Cinematic wedding films and highlight reels you'll treasure for years." },
+  { name: "Bridal Makeup", icon: Palette, description: "Professional bridal and family makeup artists for your big day." },
+  { name: "Wedding Setup & Planning", icon: LayoutGrid, description: "End-to-end planning, timelines, and on-day coordination." },
+  { name: "Catering", icon: UtensilsCrossed, description: "Curated menus and catering partners for every guest count and taste." },
+];
+
+// Sample placeholder venues — replace with your real venues, photos, and
+// videos whenever you're ready. Add as many venues to each category as
+// you like by adding more objects to the "venues" array.
+const CATEGORIES = [
+  {
+    id: "indoor",
+    name: "Indoor Wedding",
+    tagline: "Elegant halls and banquet spaces for a grand celebration",
+    heroImage: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+    venues: [
+      {
+        id: "grand-mandapa-hall",
+        name: "The Grand Mandapa Hall",
+        rating: 4.9,
+        priceRange: "₹4,00,000 – ₹8,00,000",
+        photos: [
+          "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "A grand, air-conditioned banquet hall with seating for up to 500 guests, a dedicated stage and mandap area, in-house lighting, and ample parking. Popular for traditional ceremonies and grand receptions alike.",
+      },
+      {
+        id: "royal-crystal-banquet",
+        name: "Royal Crystal Banquet",
+        rating: 4.9,
+        priceRange: "₹3,50,000 – ₹7,00,000",
+        photos: [
+          "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "A classic banquet hall known for its crystal chandeliers and marble interiors. Comes with an in-house décor team and a private bridal suite for getting-ready photos.",
+      },
+    ],
+  },
+  {
+    id: "outdoor",
+    name: "Outdoor Wedding",
+    tagline: "Open-air lawns and gardens for a natural, breathtaking setting",
+    heroImage: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80",
+    venues: [
+      {
+        id: "emerald-garden-lawns",
+        name: "Emerald Garden Lawns",
+        rating: 4.9,
+        priceRange: "₹3,50,000 – ₹7,50,000",
+        photos: [
+          "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "Sprawling landscaped lawns with a floral mandap area, string-lit walkways, and space for up to 400 guests under the open sky. Includes a backup covered pavilion for weather flexibility.",
+      },
+      {
+        id: "courtyard-estate",
+        name: "The Courtyard Estate",
+        rating: 4.9,
+        priceRange: "₹4,50,000 – ₹9,00,000",
+        photos: [
+          "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "A heritage-style courtyard estate with stone architecture and open-sky seating, perfect for a royal outdoor wedding theme. Includes on-site guest accommodation.",
+      },
+    ],
+  },
+  {
+    id: "beach",
+    name: "Beach Wedding",
+    tagline: "Barefoot ceremonies by the shore, with the ocean as your backdrop",
+    heroImage: "https://images.unsplash.com/photo-1519167758481-83f29c1fe8ce?auto=format&fit=crop&w=1200&q=80",
+    venues: [
+      {
+        id: "golden-shore-resort",
+        name: "Golden Shore Resort",
+        rating: 4.9,
+        priceRange: "₹5,00,000 – ₹10,00,000",
+        photos: [
+          "https://images.unsplash.com/photo-1519167758481-83f29c1fe8ce?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "A private beachfront resort with a dedicated ceremony deck facing the sunset, in-house catering, and guest rooms overlooking the ocean. Ideal for both intimate and large beach weddings.",
+      },
+      {
+        id: "azure-bay-lawn",
+        name: "Azure Bay Wedding Lawn",
+        rating: 4.9,
+        priceRange: "₹4,50,000 – ₹8,50,000",
+        photos: [
+          "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80",
+        ],
+        videos: [],
+        details:
+          "A beachside lawn just steps from the shoreline, with a rustic wooden mandap and fairy-lit seating for evening ceremonies. Sunset time slots are the most requested.",
+      },
+    ],
+  },
+];
+
+/* =====================================================================
+   COMPONENTS
+===================================================================== */
+
+function VenueMediaSlider({ media }) {
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (idx >= media.length) setIdx(0);
+  }, [media.length, idx]);
+
+  const current = media[idx];
+
+  useEffect(() => {
+    if (!current || media.length <= 1) return undefined;
+    if (current.type === "image") {
+      const t = setTimeout(() => setIdx((i) => (i + 1) % media.length), 1000);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  }, [idx, media.length, current]);
+
+  if (!current) {
+    return <div className="no-media">No photos or videos added yet.</div>;
+  }
+
+  return (
+    <div className="venue-slider">
+      <div className="venue-slider-frame">
+        {current.type === "image" ? (
+          <img src={current.src} alt="" />
+        ) : (
+          <video
+            key={current.src}
+            src={current.src}
+            autoPlay
+            muted
+            loop={media.length <= 1}
+            playsInline
+            onEnded={() => { if (media.length > 1) setIdx((i) => (i + 1) % media.length); }}
+          />
+        )}
+      </div>
+      {media.length > 1 && (
+        <div className="venue-slider-dots">
+          {media.map((m, i) => (
+            <span key={i} className={"dot" + (i === idx ? " active" : "")} onClick={() => setIdx(i)} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function navClass(view, type) {
+  return "nav-link" + (view.type === type ? " active" : "");
+}
+
+function Header({ view, goHome, goAbout, goContact }) {
+  return (
+    <header className="site-header">
+      <button className="brand" onClick={goHome}>
+        <span className="brand-name">MARRIHEAVEN</span>
+        <span className="brand-tagline">Marriages are made in heaven</span>
+      </button>
+      <nav className="main-nav">
+        <button className={navClass(view, "about")} onClick={goAbout}>About Us</button>
+        <button className={navClass(view, "contact")} onClick={goContact}>Contact Us</button>
+      </nav>
+    </header>
+  );
+}
+
+function HomePage({ goToCategory }) {
+  return (
+    <div className="page home-page">
+      <section className="intro-section">
+        <p>{INTRO_TEXT}</p>
+      </section>
+
+      <section className="quote-section">
+        <div className="quote-border">
+          <p>{QUOTE_TEXT}</p>
+        </div>
+      </section>
+
+      <section className="story-section">
+        {STORY_BLOCKS.map((block, i) => (
+          <div key={i} className={"story-block" + (i % 2 === 1 ? " reverse" : "")}>
+            <div className="story-media">
+              <img src={block.image} alt="" />
+            </div>
+            <div className="story-text">
+              <p>{block.text}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section className="categories-section">
+        <h2>Choose Your Wedding Style</h2>
+        <div className="ornament"><span className="diamond" /></div>
+        <div className="category-grid">
+          {CATEGORIES.map((cat) => (
+            <button key={cat.id} className="category-card" onClick={() => goToCategory(cat.id)}>
+              <div className="category-card-img">
+                <img src={cat.heroImage} alt="" />
+              </div>
+              <div className="category-card-label">{cat.name}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="services-section">
+        <h2>What We Provide</h2>
+        <div className="ornament"><span className="diamond" /></div>
+        <div className="services-grid">
+          {SERVICES.map((s) => {
+            const Icon = s.icon;
+            return (
+              <div key={s.name} className="service-card">
+                <div className="service-icon"><Icon size={22} /></div>
+                <h3>{s.name}</h3>
+                <p>{s.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="trust-section">
+        <div className="ornament"><span className="diamond" /></div>
+        <p>{TRUST_TEXT}</p>
+      </section>
+    </div>
+  );
+}
+
+function AboutPage() {
+  return (
+    <div className="page about-page">
+      <h1>About Us</h1>
+      <div className="ornament"><span className="diamond" /></div>
+      <div className="content-card">
+        <p>{ABOUT_TEXT}</p>
+      </div>
+    </div>
+  );
+}
+
+function ContactPage() {
+  return (
+    <div className="page contact-page">
+      <h1>Contact Us</h1>
+      <div className="ornament"><span className="diamond" /></div>
+      <div className="content-card contact-card">
+        <div className="contact-row">
+          <Phone size={18} />
+          {CONTACT_INFO.phone ? <a href={`tel:${CONTACT_INFO.phone}`}>{CONTACT_INFO.phone}</a> : <span className="muted">Phone number to be added</span>}
+        </div>
+        <div className="contact-row">
+          <Mail size={18} />
+          {CONTACT_INFO.email ? <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a> : <span className="muted">Email to be added</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CategoryPage({ categoryId, goToVenue, goHome }) {
+  const category = CATEGORIES.find((c) => c.id === categoryId);
+  if (!category) return <div className="page">Category not found.</div>;
+
+  return (
+    <div className="page category-page">
+      <button className="back-link" onClick={goHome}><ChevronLeft size={16} /> Back to home</button>
+      <h1>{category.name}</h1>
+      <p className="category-tagline">{category.tagline}</p>
+      <div className="ornament"><span className="diamond" /></div>
+      <div className="venue-list-vertical">
+        {category.venues.map((v) => (
+          <button key={v.id} className="venue-row-card" onClick={() => goToVenue(category.id, v.id)}>
+            <div className="venue-photo-wrap">
+              <img src={v.photos[0]} alt="" />
+              <div className="venue-rating-badge"><Star size={12} fill="currentColor" /> {v.rating}</div>
+              <div className="venue-price-badge">{v.priceRange}</div>
+            </div>
+            <div className="venue-row-name">{v.name}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VenuePage({ categoryId, venueId, goBack }) {
+  const category = CATEGORIES.find((c) => c.id === categoryId);
+  const venue = category && category.venues.find((v) => v.id === venueId);
+  if (!category || !venue) return <div className="page">Venue not found.</div>;
+
+  const media = [
+    ...venue.photos.map((p) => ({ type: "image", src: p })),
+    ...(venue.videos || []).map((v) => ({ type: "video", src: v })),
+  ];
+
+  return (
+    <div className="page venue-page">
+      <button className="back-link" onClick={goBack}><ChevronLeft size={16} /> Back to {category.name}</button>
+      <h1>{venue.name}</h1>
+      <div className="venue-rating-line"><Star size={14} fill="currentColor" /> {venue.rating} rated</div>
+      <div className="content-card venue-detail-card">
+        <VenueMediaSlider media={media} />
+        <div className="venue-detail-info">
+          <div className="venue-price-line">{venue.priceRange}</div>
+          <p>{venue.details}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="ornament small"><span className="diamond" /></div>
+      <div className="footer-row">
+        <Phone size={16} />
+        {CONTACT_INFO.phone ? <a href={`tel:${CONTACT_INFO.phone}`}>{CONTACT_INFO.phone}</a> : <span className="muted">Contact number coming soon</span>}
+      </div>
+      <div className="footer-row">
+        <Mail size={16} />
+        {CONTACT_INFO.email ? <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a> : <span className="muted">Email coming soon</span>}
+      </div>
+    </footer>
+  );
+}
+
+export default function App() {
+  const [view, setView] = useState({ type: "home" });
+
+  const goHome = () => setView({ type: "home" });
+  const goAbout = () => setView({ type: "about" });
+  const goContact = () => setView({ type: "contact" });
+  const goToCategory = (id) => setView({ type: "category", id });
+  const goToVenue = (catId, venueId) => setView({ type: "venue", catId, venueId });
+
+  return (
+    <div className="app-root">
+      <GlobalStyles />
+      <Header view={view} goHome={goHome} goAbout={goAbout} goContact={goContact} />
+      <main className="site-main">
+        {view.type === "home" && <HomePage goToCategory={goToCategory} />}
+        {view.type === "about" && <AboutPage />}
+        {view.type === "contact" && <ContactPage />}
+        {view.type === "category" && <CategoryPage categoryId={view.id} goToVenue={goToVenue} goHome={goHome} />}
+        {view.type === "venue" && (
+          <VenuePage categoryId={view.catId} venueId={view.venueId} goBack={() => goToCategory(view.catId)} />
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* =====================================================================
+   STYLES
+===================================================================== */
+
+function GlobalStyles() {
+  return (
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap');
+
+      .app-root {
+        --ivory: #FFFBF3;
+        --surface: #FFFFFF;
+        --wine: #A6205C;
+        --wine-dark: #7A1745;
+        --gold: #C79A56;
+        --gold-light: #F3E2C4;
+        --charcoal: #241D1A;
+        --muted: #8B7F74;
+        --border: #F0E4D2;
+
+        font-family: 'Jost', sans-serif;
+        background: var(--ivory);
+        color: var(--charcoal);
+        min-height: 100vh;
+      }
+      .app-root *, .app-root *:before, .app-root *:after { box-sizing: border-box; }
+      .app-root button { font-family: inherit; cursor: pointer; background: none; border: none; }
+      .app-root a { color: var(--wine); text-decoration: none; }
+      .app-root a:hover { text-decoration: underline; }
+      .app-root button:focus-visible, .app-root a:focus-visible {
+        outline: 2px solid var(--wine); outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-root * { transition: none !important; animation: none !important; }
+      }
+
+      /* header */
+      .site-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 22px 40px; background: var(--surface); border-bottom: 1px solid var(--border);
+        flex-wrap: wrap; gap: 12px;
+      }
+      .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; }
+      .brand-name {
+        font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 28px;
+        letter-spacing: 1px; color: var(--wine-dark);
+      }
+      .brand-tagline { font-size: 12px; font-style: italic; color: var(--muted); }
+      .main-nav { display: flex; gap: 28px; }
+      .nav-link {
+        font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+        color: var(--charcoal); padding-bottom: 3px; border-bottom: 2px solid transparent;
+      }
+      .nav-link:hover, .nav-link.active { color: var(--wine); border-bottom-color: var(--gold); }
+
+      .site-main { max-width: 1040px; margin: 0 auto; padding: 40px 24px 60px; }
+      .page h1 {
+        font-family: 'Cormorant Garamond', serif; font-size: 34px; color: var(--wine-dark);
+        text-align: center; margin: 0 0 6px;
+      }
+
+      .ornament {
+        width: 130px; height: 14px; margin: 16px auto; position: relative;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .ornament::before, .ornament::after {
+        content: ''; position: absolute; top: 50%; width: 50px; height: 1px;
+        background: var(--gold); transform: translateY(-50%);
+      }
+      .ornament::before { left: 0; }
+      .ornament::after { right: 0; }
+      .ornament > .diamond { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+      .ornament.small { width: 90px; margin: 0 auto 16px; }
+
+      /* home sections */
+      .intro-section { max-width: 680px; margin: 0 auto 40px; text-align: center; }
+      .intro-section p { font-size: 17px; line-height: 1.8; color: var(--charcoal); }
+
+      .quote-section { display: flex; justify-content: center; margin-bottom: 50px; }
+      .quote-border {
+        border: 3px double var(--gold); border-radius: 2px; padding: 30px 40px;
+        max-width: 620px; text-align: center; background: var(--surface);
+      }
+      .quote-border p {
+        font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic;
+        color: var(--wine-dark); margin: 0; line-height: 1.6;
+      }
+
+      .story-section { display: flex; flex-direction: column; gap: 30px; margin-bottom: 50px; }
+      .story-block {
+        display: flex; align-items: center; gap: 30px;
+        border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface);
+      }
+      .story-block.reverse { flex-direction: row-reverse; }
+      .story-media { flex: 1; min-width: 0; }
+      .story-media img { width: 100%; height: 280px; object-fit: cover; display: block; }
+      .story-text { flex: 1; min-width: 0; padding: 20px 30px; }
+      .story-text p { font-size: 15px; line-height: 1.8; color: var(--charcoal); }
+      @media (max-width: 700px) {
+        .story-block, .story-block.reverse { flex-direction: column; }
+        .story-media img { height: 220px; }
+      }
+
+      .categories-section, .services-section, .trust-section { text-align: center; margin-bottom: 50px; }
+      .categories-section h2, .services-section h2 {
+        font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--wine-dark);
+      }
+      .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 10px; }
+      .category-card {
+        border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface);
+        text-align: left;
+      }
+      .category-card:hover { border-color: var(--gold); }
+      .category-card-img { height: 180px; overflow: hidden; }
+      .category-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .category-card-label {
+        padding: 14px; font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--wine-dark); text-align: center;
+      }
+
+      .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 10px; }
+      .service-card {
+        border: 1px solid var(--gold); border-radius: 6px; padding: 24px 18px; background: var(--surface);
+      }
+      .service-icon {
+        width: 44px; height: 44px; border-radius: 50%; background: var(--gold-light); color: var(--wine);
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
+      }
+      .service-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--wine-dark); margin: 0 0 8px; }
+      .service-card p { font-size: 13.5px; line-height: 1.6; color: var(--muted); margin: 0; }
+
+      .trust-section p { max-width: 640px; margin: 0 auto; font-size: 15px; line-height: 1.8; color: var(--charcoal); font-style: italic; }
+
+      /* footer */
+      .site-footer {
+        border-top: 1px solid var(--border); padding: 30px 24px 40px; text-align: center;
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+      }
+      .footer-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--charcoal); }
+      .muted { color: var(--muted); font-style: italic; }
+
+      /* content card (about/contact) */
+      .content-card {
+        max-width: 640px; margin: 20px auto 0; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 6px; padding: 26px 30px;
+      }
+      .content-card p { font-size: 15.5px; line-height: 1.8; color: var(--charcoal); margin: 0; }
+      .contact-card { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+      .contact-row { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+
+      /* category page */
+      .back-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+      .back-link:hover { color: var(--wine); }
+      .category-tagline { text-align: center; color: var(--muted); font-size: 14px; margin: 0; }
+
+      .venue-list-vertical { display: flex; flex-direction: column; gap: 20px; max-width: 480px; }
+      .venue-row-card {
+        display: flex; flex-direction: column; text-align: left;
+        border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface);
+      }
+      .venue-row-card:hover { border-color: var(--gold); }
+      .venue-photo-wrap { position: relative; width: 100%; height: 220px; }
+      .venue-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .venue-rating-badge {
+        position: absolute; top: 10px; right: 10px;
+        background: rgba(36,29,26,0.72); color: var(--gold-light);
+        border-radius: 20px; padding: 4px 10px; font-size: 12px;
+        display: flex; align-items: center; gap: 4px;
+      }
+      .venue-price-badge {
+        position: absolute; bottom: 10px; right: 10px;
+        background: var(--wine); color: #fff;
+        border-radius: 20px; padding: 4px 12px; font-size: 12px;
+      }
+      .venue-row-name {
+        padding: 14px 16px; font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--wine-dark);
+      }
+
+      /* venue detail page */
+      .venue-page { text-align: center; }
+      .venue-rating-line {
+        display: inline-flex; align-items: center; gap: 5px; color: var(--gold);
+        font-size: 13px; margin-bottom: 20px;
+      }
+      .venue-detail-card { text-align: left; padding: 20px; }
+      .venue-slider { display: flex; flex-direction: column; gap: 10px; }
+      .venue-slider-frame { width: 100%; border-radius: 6px; overflow: hidden; background: var(--ivory); }
+      .venue-slider-frame img, .venue-slider-frame video { width: 100%; max-height: 440px; object-fit: cover; display: block; }
+      .venue-slider-dots { display: flex; justify-content: center; gap: 6px; }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); cursor: pointer; }
+      .dot.active { background: var(--wine); }
+      .no-media { padding: 60px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 6px; }
+      .venue-detail-info { margin-top: 18px; }
+      .venue-price-line {
+        display: inline-block; background: var(--gold-light); color: var(--wine-dark);
+        border-radius: 20px; padding: 5px 16px; font-size: 14px; margin-bottom: 14px;
+      }
+      .venue-detail-info p { font-size: 15px; line-height: 1.8; color: var(--charcoal); }
+
+      @media (max-width: 560px) {
+        .site-header { padding: 18px 20px; }
+        .brand-name { font-size: 22px; }
+        .site-main { padding: 30px 16px 40px; }
+      }
+    `}</style>
+  );
+}
